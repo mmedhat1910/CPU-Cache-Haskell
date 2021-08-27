@@ -163,6 +163,7 @@ replaceInCache tag idx memory oldCache "setAssoc" bitsNum = (d, finalCache)
     address = convertBinToDec binAddress
     binAddress = read (getEffectiveAddress tag idx "setAssoc" (fromIntegral bitsNum)) :: Int
 
+getData :: (Eq t, Integral b) => String -> [Item t] -> [t] -> [Char] -> b -> (t, [Item t])
 getData stringAddress cache memory cacheType bitsNum
   | x == NoOutput = replaceInCache tag index memory cache cacheType bitsNum
   | otherwise = (getX x, cache)
@@ -172,9 +173,10 @@ getData stringAddress cache memory cacheType bitsNum
     (tag, index) = convertAddress address bitsNum cacheType
     getX (Out (d, _)) = d
 
+runProgram :: (RealFloat a1, Eq a2) => [[Char]] -> [Item a2] -> [a2] -> [Char] -> a1 -> ([a2], [Item a2])
 runProgram [] cache _ _ _ = ([], cache)
-runProgram (addr : xs) cache memory cacheType numSets = ((d : prevData), finalCache)
+runProgram (addr : xs) cache memory cacheType numOfSets = ((d : prevData), finalCache)
   where
-    bitsNum = round (logBase2 numSets)
+    bitsNum = round (logBase2 numOfSets)
     (d, updatedCache) = getData addr cache memory cacheType bitsNum
-    (prevData, finalCache) = runProgram xs updatedCache memory cacheType numSets
+    (prevData, finalCache) = runProgram xs updatedCache memory cacheType numOfSets
